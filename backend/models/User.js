@@ -17,10 +17,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    favorites: [
+      {
+        movieId: { type: String, required: true }, // TMDb movie ID
+        title: String,
+        posterPath: String,
+        rating: Number,
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
