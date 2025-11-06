@@ -19,6 +19,9 @@ app.use(express.json());
 //mount auth routes
 app.use('/auth', authRoutes);
 
+const favoriteRoutes = require('./routes/favoriteRoutes');
+app.use('/favorites', favoriteRoutes);
+
 //protected test route
 app.get('/profile', authMiddleware, async(req,res)=>{
     try{
