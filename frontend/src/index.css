@@ -1,5 +1,10 @@
 /* 🌎 Global App Styles */
 
+html, body, * {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -201,3 +206,60 @@ form h2 {
     width: 90%;
   }
 }
+
+/* 🌙 Dark mode support */
+.dark-mode body {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+.dark-mode header {
+  background-color: #1f1f1f;
+  border-bottom-color: #333;
+}
+
+.dark-mode header nav a {
+  color: #eaeaea;
+}
+
+.dark-mode header nav a:hover {
+  color: #4dabf7;
+}
+
+.dark-mode button {
+  background-color: #333;
+  color: #f9f9f9;
+}
+
+.dark-mode button:hover {
+  background-color: #555;
+}
+
+.dark-mode input {
+  background-color: #1f1f1f;
+  color: #fff;
+  border-color: #555;
+}
+
+.dark-mode .card {
+  background-color: #1f1f1f;
+  color: #f1f1f1;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .alert--error {
+  background-color: #3b1a1a;
+  border-color: #663333;
+  color: #f6b5b5;
+}
+
+.dark-mode .alert--info {
+  background-color: #182533;
+  border-color: #3b5a7a;
+  color: #a6c8ff;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #444;
+}
+

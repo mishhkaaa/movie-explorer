@@ -5,15 +5,24 @@ import API from '../services/api'; // axios instance
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // Initialize from localStorage so refreshes persist
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Keep API Authorization header in sync with token
+  // Restore user + token from localStorage on app start
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
+      API.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+    }
+    setLoading(false);
+  }, []);
+
+  // Keep Authorization header updated
   useEffect(() => {
     if (token) {
       API.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -22,29 +31,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // Load profile if token exists (verify session)
-  useEffect(() => {
-    const initAuth = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await API.get('/profile');
-        setUser(res.data.user);
-      } catch (err) {
-        console.error('Auth initialization failed:', err);
-        logout(); // invalid token or expired
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initAuth();
-  }, [token]);
-
-  // 🔐 Register a new user
+  // 🔐 Register new user
   const register = async ({ username, email, password }) => {
     const res = await API.post('/auth/register', { username, email, password });
     const { user: userData, token: jwt } = res.data;
@@ -82,18 +69,35 @@ export const AuthProvider = ({ children }) => {
     window.location.href = '/login';
   };
 
+  // 🌀 Show a loading message while restoring session
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontSize: '18px',
+          fontWeight: 500,
+        }}
+      >
+        Restoring session...
+      </div>
+    );
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user,
         token,
-        loading,
         register,
         login,
         logout,
       }}
     >
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
